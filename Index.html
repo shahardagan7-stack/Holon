@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="שיפוץ דגן">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2d3436">
+    <meta name="application-name" content="שיפוץ דגן">
+    <title>ניהול תקציב שיפוץ</title>
+
+    <!-- ============ GENERATE APP ICON ============ -->
+    <script>
+        (function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 180;
+            canvas.height = 180;
+            const ctx = canvas.getContext('2d');
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 180, 180);
+            gradient.addColorStop(0, '#e17055');
+            gradient.addColorStop(1, '#d63031');
+
+            // Rounded rect background
+            ctx.beginPath();
+            const r = 40;
+            ctx.moveTo(r, 0);
+            ctx.lineTo(180 - r, 0);
+            ctx.quadraticCurveTo(180, 0, 180, r);
+            ctx.lineTo(180, 180 - r);
+            ctx.quadraticCurveTo(180, 180, 180 - r, 180);
+            ctx.lineTo(r, 180);
+            ctx.quadraticCurveTo(0, 180, 0, 180 - r);
+            ctx.lineTo(0, r);
+            ctx.quadraticCurveTo(0, 0, r, 0);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Inner glow
+            const innerGlow = ctx.createRadialGradient(90, 90, 20, 90, 90, 100);
+            innerGlow.addColorStop(0, 'rgba(255,255,255,0.15)');
+            innerGlow.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = innerGlow;
+            ctx.fill();
+
+            // House icon
+            ctx.save();
+            ctx.translate(90, 55);
+            ctx.beginPath();
+            ctx.moveTo(0, -30);
+            ctx.lineTo(-40, 10);
+            ctx.lineTo(-32, 10);
+            ctx.lineTo(-32, 35);
+            ctx.lineTo(32, 35);
+            ctx.lineTo(32, 10);
+            ctx.lineTo(40, 10);
+            ctx.closePath();
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            // Door
+            ctx.fillStyle = '#e17055';
+            ctx.fillRect(-8, 10, 16, 25);
+
+            // Windows
+            ctx.fillStyle = '#fab1a0';
+            ctx.fillRect(-28, 12, 14, 12);
+            ctx.fillRect(14, 12, 14, 12);
+
+            // Window crosses
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-21, 12); ctx.lineTo(-21, 24);
+            ctx.moveTo(-28, 18); ctx.lineTo(-14, 18);
+            ctx.moveTo(21, 12); ctx.lineTo(21, 24);
+            ctx.moveTo(14, 18); ctx.lineTo(28, 18);
+            ctx.stroke();
+
+            // Wrench icon (small)
+            ctx.restore();
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🔧', 90, 118);
+
+            // Text
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            ctx.font = 'bold 22px Segoe UI, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('שיפוץ דגן', 90, 152);
+
+            // Decorative line
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 128);
+            ctx.lineTo(140, 128);
+            ctx.stroke();
+
+            // Set as icons
+            const dataUrl = canvas.toDataURL('image/png');
+
+            const sizes = [180, 152, 120];
+            sizes.forEach(size => {
+                const c = document.createElement('canvas');
+                c.width = size; c.height = size;
+                c.getContext('2d').drawImage(canvas, 0, 0, size, size);
+                const link = document.createElement('link');
+                link.rel = 'apple-touch-icon';
+                link.sizes = size + 'x' + size;
+                link.href = c.toDataURL('image/png');
+                document.head.appendChild(link);
+            });
+
+            const favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            favicon.type = 'image/png';
+            favicon.href = dataUrl;
+            document.head.appendChild(favicon);
+        })();
+    </script>
+
+    <!-- ============ WEB APP MANIFEST ============ -->
+    <script>
+        const manifest = {
+            name: "ניהול תקציב שיפוץ - משפחת דגן",
+            short_name: "שיפוץ דגן",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#2d3436",
+            theme_color: "#e17055",
+            orientation: "portrait",
+            icons: []
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = URL.createObjectURL(manifestBlob);
+        document.head.appendChild(manifestLink);
+    </script>
+
+    <!-- ============ SPLASH SCREEN ============ -->
+    <script>
+        function generateSplashScreen() {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.screen.width * window.devicePixelRatio;
+            canvas.height = window.screen.height * window.devicePixelRatio;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#2d3436');
+            gradient.addColorStop(0.5, '#636e72');
+            gradient.addColorStop(1, '#2d3436');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2 - 50;
+            const scale = window.devicePixelRatio / 2;
+
+            const logoGrad = ctx.createLinearGradient(cx - 60*scale, cy - 60*scale, cx + 60*scale, cy + 60*scale);
+            logoGrad.addColorStop(0, '#e17055');
+            logoGrad.addColorStop(1, '#d63031');
+
+            const logoSize = 60 * scale;
+            const lr = 15 * scale;
+            ctx.beginPath();
+            ctx.moveTo(cx - logoSize + lr, cy - logoSize);
+            ctx.lineTo(cx + logoSize - lr, cy - logoSize);
+            ctx.quadraticCurveTo(cx + logoSize, cy - logoSize, cx + logoSize, cy - logoSize + lr);
+            ctx.lineTo(cx + logoSize, cy + logoSize - lr);
+            ctx.quadraticCurveTo(cx + logoSize, cy + logoSize, cx + logoSize - lr, cy + logoSize);
+            ctx.lineTo(cx - logoSize + lr, cy + logoSize);
+            ctx.quadraticCurveTo(cx - logoSize, cy + logoSize, cx - logoSize, cy + logoSize - lr);
+            ctx.lineTo(cx - logoSize, cy - logoSize + lr);
+            ctx.quadraticCurveTo(cx - logoSize, cy - logoSize, cx - logoSize + lr, cy - logoSize);
+            ctx.closePath();
+            ctx.fillStyle = logoGrad;
+            ctx.fill();
+
+            // House
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(scale, scale);
+            ctx.beginPath();
+            ctx.moveTo(0, -35);
+            ctx.lineTo(-45, 10);
+            ctx.lineTo(-35, 10);
+            ctx.lineTo(-35, 40);
+            ctx.lineTo(35, 40);
+            ctx.lineTo(35, 10);
+            ctx.lineTo(45, 10);
+            ctx.closePath();
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.restore();
+
+            const fontSize = 28 * scale;
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${fontSize}px Segoe UI, Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.fillText('שיפוץ דגן', cx, cy + logoSize + 60);
+
+            const subSize = 16 * scale;
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = `${subSize}px Segoe UI, Arial, sans-serif`;
+            ctx.fillText('ניהול תקציב שיפוץ הבית', cx, cy + logoSize + 100);
+
+            const link = document.createElement('link');
+            link.rel = 'apple-touch-startup-image';
+            link.href = canvas.toDataURL('image/png');
+            document.head.appendChild(link);
+        }
+        generateSplashScreen();
+    </script>
+
+    <style>
+        /* ============ LOADING SCREEN ============ */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #2d3436, #636e72, #2d3436);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-logo-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #e17055, #d63031);
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            animation: logoPulse 2s ease-in-out infinite;
+            box-shadow: 0 20px 60px rgba(225, 112, 85, 0.4);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .loading-logo svg {
+            width: 70px;
+            height: 70px;
+        }
+
+        .loading-logo-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px; height: 160px;
+            border: 3px solid transparent;
+            border-top: 3px solid #e17055;
+            border-right: 3px solid #d63031;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .loading-logo-ring:nth-child(3) {
+            width: 185px; height: 185px;
+            border-top: 3px solid #d63031;
+            border-right: 3px solid #e17055;
+            animation: spinReverse 2s linear infinite;
+            opacity: 0.5;
+        }
+
+        .loading-title {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        .loading-subtitle {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.8s forwards;
+        }
+
+        .loading-bar-container {
+            width: 250px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1s forwards;
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #e17055, #d63031, #fab1a0);
+            border-radius: 10px;
+            animation: loadBar 2.5s ease-in-out forwards;
+        }
+
+        .loading-percentage {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 15px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1s forwards;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes spinReverse {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes loadBar {
+            0% { width: 0%; }
+            20% { width: 25%; }
+            50% { width: 60%; }
+            80% { width: 85%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+        }
+
+        /* ============ MAIN APP ============ */
+        #main-app {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        #main-app.visible {
+            opacity: 1;
+        }
+
+        /* ============ SITE LOGO ============ */
+        .site-logo-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .site-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e17055, #d63031);
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 8px 25px rgba(225, 112, 85, 0.3);
+            animation: logoFloat 3s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .site-logo svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .site-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-logo-text h1 {
+            font-size: 20px;
+            margin: 0;
+            background: linear-gradient(135deg, #e17055, #d63031);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .site-logo-text p {
+            font-size: 11px;
+            color: #636e72;
+            margin: 0;
+        }
+
+        /* ============ INSTALL PROMPT ============ */
+        .install-prompt {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            padding: 16px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.15);
+            z-index: 2000;
+            display: none;
+            border-radius: 20px 20px 0 0;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .install-prompt-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .install-prompt-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #e17055, #d63031);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .install-prompt-icon svg { width: 28px; height: 28px; }
+
+        .install-prompt-text h3 { font-size: 15px; color: #2d3436; margin-bottom: 2px; }
+        .install-prompt-text p { font-size: 12px; color: #636e72; margin: 0; }
+
+        .install-prompt-steps {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .install-prompt-steps p {
+            font-size: 13px;
+            color: #2d3436;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .install-prompt-steps p:last-child { margin-bottom: 0; }
+
+        .install-prompt-close {
+            width: 100%;
+            padding: 12px;
+            background: #e17055;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 48px;
+        }
+
+        /* ============ BASE STYLES ============ */
+        :root {
+            --primary: #e17055;
+            --primary-dark: #d63031;
+            --primary-light: #fab1a0;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --dark: #2d3436;
+            --light: #f8f9fa;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-top: env(safe-area-inset-top, 0px);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            direction: rtl;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 10px auto;
+            padding: 0 10px;
+            padding-bottom: 80px;
+        }
+
+        /* ============ SUMMARY BAR ============ */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .summary-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .summary-item:hover { transform: translateY(-2px); }
+
+        .summary-item .label {
+            font-size: 11px;
+            color: #636e72;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .summary-item .value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .summary-item.budget .value { color: #0984e3; }
+        .summary-item.designer .value { color: #6c5ce7; }
+        .summary-item.expenses .value { color: #e17055; }
+        .summary-item.paid .value { color: #00b894; }
+        .summary-item.remaining .value { color: #fdcb6e; }
+        .summary-item.debt .value { color: #d63031; }
+
+        /* ============ HEADER ============ */
+        header {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 15px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #e17055, #d63031, #fab1a0);
+        }
+
+        header h1 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        header p {
+            color: #636e72;
+            font-size: 12px;
+            position: relative;
+        }
+
+        /* ============ SECTIONS ============ */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            font-size: 17px;
+            color: var(--dark);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section .hint {
+            font-size: 12px;
+            color: #b2bec3;
+            margin-bottom: 12px;
+        }
+
+        /* ============ FORMS ============ */
+        .form-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: calc(50% - 4px);
+        }
+
+        .form-group.full-width {
+            min-width: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 48px;
+            background: white;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(225, 112, 85, 0.15);
+        }
+
+        .form-group select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23636e72' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 12px center;
+            background-size: 16px;
+            padding-left: 36px;
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* ============ BUTTONS ============ */
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-height: 48px;
+            touch-action: manipulation;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:active { transform: scale(0.96); }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: var(--dark); }
+        .btn-blue { background: #0984e3; color: white; }
+        .btn-purple { background: #6c5ce7; color: white; }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 12px;
+            min-height: 38px;
+        }
+
+        .btn-full { width: 100%; }
+
+        /* ============ ACTION BUTTONS ============ */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 12px;
+            padding: 10px 8px;
+        }
+
+        /* ============ TABLE ============ */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar { height: 4px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #b2bec3; border-radius: 10px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        th {
+            background: var(--dark);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:first-child { border-radius: 10px 0 0 0; }
+        th:last-child { border-radius: 0 10px 0 0; }
+
+        tr:hover { background: #f8f9fa; }
+
+        .total-row {
+            font-weight: bold;
+            background: #f8f9fa !important;
+            color: var(--primary);
+        }
+
+        /* ============ BADGES ============ */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+
+        /* ============ FILTER BAR ============ */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar label {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .filter-bar select {
+            padding: 10px 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            min-height: 44px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* ============ NOTES SECTION ============ */
+        .notes-area {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .notes-area:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(225, 112, 85, 0.15);
+        }
+
+        /* ============ SAVE BUTTON ============ */
+        .save-btn-float {
+            position: fixed;
+            bottom: 20px;
+            right: 15px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(225, 112, 85, 0.4);
+            z-index: 1000;
+            transition: all 0.3s;
+            touch-action: manipulation;
+            bottom: calc(20px + var(--safe-bottom));
+        }
+
+        .save-btn-float:active { transform: scale(0.9); }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,184,148,0.4);
+            white-space: nowrap;
+            bottom: calc(90px + var(--safe-bottom));
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-50%) translateY(30px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        /* ============ EMPTY STATE ============ */
+        .empty-state {
+            text-align: center;
+            padding: 30px 15px;
+            color: #b2bec3;
+        }
+
+        .empty-state .icon { font-size: 40px; margin-bottom: 8px; }
+        .empty-state p { font-size: 13px; }
+
+        /* ============ FILE PREVIEW ============ */
+        .file-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #2e7d32;
+        }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 3000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.4s ease;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 360px) {
+            .container { padding: 0 6px; }
+            .site-logo { width: 42px; height: 42px; border-radius: 12px; }
+            .site-logo svg { width: 22px; height: 22px; }
+            .site-logo-text h1 { font-size: 16px; }
+            .summary-item { padding: 8px 6px; }
+            .summary-item .label { font-size: 9px; }
+            .summary-item .value { font-size: 14px; }
+            .section { padding: 10px; }
+            .section h2 { font-size: 15px; }
+            .form-group { min-width: 100%; }
+            .action-buttons .btn { font-size: 10px; padding: 8px 4px; }
+            .loading-logo { width: 90px; height: 90px; border-radius: 22px; }
+            .loading-logo svg { width: 50px; height: 50px; }
+            .loading-logo-ring { width: 120px; height: 120px; }
+            .loading-logo-ring:nth-child(3) { width: 140px; height: 140px; }
+            .loading-title { font-size: 20px; }
+            .loading-subtitle { font-size: 13px; }
+            .loading-bar-container { width: 200px; }
+        }
+
+        @media (min-width: 361px) and (max-width: 480px) {
+            .site-logo-text h1 { font-size: 18px; }
+            .summary-item .value { font-size: 16px; }
+            .form-group { min-width: 100%; }
+        }
+
+        @media (min-width: 481px) and (max-width: 767px) {
+            .summary-bar { grid-template-columns: repeat(3, 1fr); }
+            .form-group { min-width: calc(50% - 4px); }
+        }
+
+        @media (min-width: 768px) {
+            .container { padding: 0 20px; margin: 20px auto; }
+            .summary-bar { grid-template-columns: repeat(6, 1fr); gap: 12px; }
+            .summary-item { padding: 18px 12px; }
+            .summary-item .label { font-size: 12px; }
+            .summary-item .value { font-size: 22px; }
+            .section { padding: 20px; border-radius: 15px; }
+            .section h2 { font-size: 20px; }
+            .form-group { min-width: 150px; }
+            .action-buttons .btn { font-size: 14px; padding: 10px 20px; flex: 0; }
+            table { min-width: unset; }
+            header { padding: 25px; }
+            header h1 { font-size: 24px; }
+
+            .site-logo { width: 60px; height: 60px; }
+            .site-logo svg { width: 32px; height: 32px; }
+            .site-logo-text h1 { font-size: 24px; }
+            .site-logo-text p { font-size: 13px; }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .loading-logo { width: 70px; height: 70px; }
+            .loading-logo svg { width: 40px; height: 40px; }
+            .loading-title { font-size: 18px; }
+            .loading-subtitle { font-size: 12px; margin-bottom: 20px; }
+            .loading-logo-container { margin-bottom: 20px; }
+            .summary-bar { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loading-screen">
+    <div class="loading-logo-container">
+        <div class="loading-logo">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- House -->
+                <polygon points="50,10 10,48 22,48 22,88 78,88 78,48 90,48" fill="white"/>
+                <!-- Door -->
+                <rect x="40" y="58" width="20" height="30" rx="2" fill="#e17055"/>
+                <circle cx="55" cy="75" r="2.5" fill="white"/>
+                <!-- Left window -->
+                <rect x="26" y="52" width="14" height="14" rx="2" fill="#fab1a0"/>
+                <line x1="33" y1="52" x2="33" y2="66" stroke="white" stroke-width="1.5"/>
+                <line x1="26" y1="59" x2="40" y2="59" stroke="white" stroke-width="1.5"/>
+                <!-- Right window -->
+                <rect x="60" y="52" width="14" height="14" rx="2" fill="#fab1a0"/>
+                <line x1="67" y1="52" x2="67" y2="66" stroke="white" stroke-width="1.5"/>
+                <line x1="60" y1="59" x2="74" y2="59" stroke="white" stroke-width="1.5"/>
+                <!-- Wrench -->
+                <text x="50" y="42" font-size="18" text-anchor="middle">🔧</text>
+            </svg>
+        </div>
+        <div class="loading-logo-ring"></div>
+        <div class="loading-logo-ring"></div>
+    </div>
+    <div class="loading-title">שיפוץ דגן</div>
+    <div class="loading-subtitle">ניהול תקציב שיפוץ הבית</div>
+    <div class="loading-bar-container">
+        <div class="loading-bar"></div>
+    </div>
+    <div class="loading-percentage">
+        <span class="loading-dots">טוען נתונים</span>
+    </div>
+</div>
+
+<!-- ============ INSTALL PROMPT ============ -->
+<div class="install-prompt" id="installPrompt">
+    <div class="install-prompt-content">
+        <div class="install-prompt-icon">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="50,10 10,48 22,48 22,88 78,88 78,48 90,48" fill="white"/>
+                <rect x="40" y="58" width="20" height="30" rx="2" fill="#e17055"/>
+                <circle cx="55" cy="75" r="2.5" fill="white"/>
+            </svg>
+        </div>
+        <div class="install-prompt-text">
+            <h3>הוסף למסך הבית</h3>
+            <p>התקן את האפליקציה לגישה מהירה</p>
+        </div>
+    </div>
+    <div class="install-prompt-steps">
+        <p>1️⃣ לחץ על כפתור <strong>השיתוף</strong> ⬆️ למטה</p>
+        <p>2️⃣ גלול ובחר <strong>"הוסף למסך הבית"</strong></p>
+        <p>3️⃣ לחץ <strong>"הוסף"</strong> ותהנה! 🎉</p>
+    </div>
+    <button class="install-prompt-close" onclick="closeInstallPrompt()">הבנתי, תודה! ✌️</button>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">✅ הנתונים נשמרו!</div>
+
+<!-- ============ MAIN APP ============ -->
+<div id="main-app">
+    <div class="container">
+
+        <!-- SUMMARY BAR -->
+        <div class="summary-bar">
+            <div class="summary-item budget">
+                <div class="label">תקציב כולל</div>
+                <div class="value" id="summaryBudget">₪0</div>
+            </div>
+            <div class="summary-item designer">
+                <div class="label">מעצבת</div>
+                <div class="value" id="summaryDesigner">₪0</div>
+            </div>
+            <div class="summary-item expenses">
+                <div class="label">סה"כ הוצאות</div>
+                <div class="value" id="summaryExpenses">₪0</div>
+            </div>
+            <div class="summary-item paid">
+                <div class="label">סה"כ שולם</div>
+                <div class="value" id="summaryPaid">₪0</div>
+            </div>
+            <div class="summary-item remaining">
+                <div class="label">יתרה</div>
+                <div class="value" id="summaryRemaining">₪0</div>
+            </div>
+            <div class="summary-item debt">
+                <div class="label">חוב פתוח</div>
+                <div class="value" id="summaryDebt">₪0</div>
+            </div>
+        </div>
+
+        <!-- HEADER -->
+        <header>
+            <div class="site-logo-wrapper">
+                <div class="site-logo">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="50,10 10,48 22,48 22,88 78,88 78,48 90,48" fill="white"/>
+                        <rect x="40" y="58" width="20" height="30" rx="2" fill="#e17055"/>
+                        <circle cx="55" cy="75" r="2.5" fill="white"/>
+                        <rect x="26" y="52" width="14" height="14" rx="2" fill="#fab1a0"/>
+                        <line x1="33" y1="52" x2="33" y2="66" stroke="white" stroke-width="1.5"/>
+                        <line x1="26" y1="59" x2="40" y2="59" stroke="white" stroke-width="1.5"/>
+                        <rect x="60" y="52" width="14" height="14" rx="2" fill="#fab1a0"/>
+                        <line x1="67" y1="52" x2="67" y2="66" stroke="white" stroke-width="1.5"/>
+                        <line x1="60" y1="59" x2="74" y2="59" stroke="white" stroke-width="1.5"/>
+                        <rect x="65" y="18" width="10" height="22" rx="2" fill="white"/>
+                        <text x="50" y="42" font-size="14" fill="#e17055" text-anchor="middle" font-weight="bold">🔧</text>
+                    </svg>
+                </div>
+                <div class="site-logo-text">
+                    <h1>🏠 ניהול תקציב שיפוץ</h1>
+                    <p>ניהול הוצאות, תשלומים ומעקב תקציב במקום אחד</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- SAVE FLOAT BUTTON -->
+        <button class="save-btn-float" onclick="saveData()" title="שמור נתונים">💾</button>
+        <div class="save-indicator" id="saveIndicator">✅ נשמר!</div>
+
+        <!-- SETTINGS SECTION -->
+        <div class="section">
+            <h2>⚙️ הגדרות תקציב</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>תקציב כולל לשיפוץ (₪)</label>
+                    <input type="number" inputmode="numeric" id="totalBudget" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>עלות מעצבת (₪)</label>
+                    <input type="number" inputmode="numeric" id="designerCost" placeholder="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>סטטוס מעצבת</label>
+                    <select id="designerStatus">
+                        <option value="unpaid">טרם שולם ⏳</option>
+                        <option value="paid">שולם ✅</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="saveSettings()">💾 שמור הגדרות</button>
+        </div>
+
+        <!-- EXPENSES TABLE SECTION -->
+        <div class="section">
+            <h2>📋 טבלת הוצאות — בעלי מקצוע</h2>
+            <p class="hint">💡 הוסף בעלי מקצוע וסכומים כדי לעקוב אחרי ההוצאות</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>שם בעל מקצוע</label>
+                    <input type="text" id="workerName" placeholder="שם">
+                </div>
+                <div class="form-group">
+                    <label>תיאור / תפקיד</label>
+                    <input type="text" id="workerDesc" placeholder="תיאור">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>סכום סה"כ (₪)</label>
+                    <input type="number" inputmode="numeric" id="workerAmount" placeholder="0">
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="addWorker()">➕ הוסף בעל מקצוע</button>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>בעל מקצוע</th>
+                            <th>תיאור</th>
+                            <th>סכום כולל</th>
+                            <th>שולם</th>
+                            <th>יתרה</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="workersTable"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="workersEmpty">
+                <div class="icon">📋</div>
+                <p>הוסף בעלי מקצוע והוצאות</p>
+            </div>
+        </div>
+
+        <!-- PAYMENTS SECTION -->
+        <div class="section">
+            <h2>💳 טבלת תשלומים</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>בעל מקצוע</label>
+                    <select id="paymentWorker">
+                        <option value="">— בחר —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>סכום (₪)</label>
+                    <input type="number" inputmode="numeric" id="paymentAmount" placeholder="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>תאריך</label>
+                    <input type="date" id="paymentDate">
+                </div>
+                <div class="form-group">
+                    <label>אמצעי תשלום</label>
+                    <select id="paymentMethod">
+                        <option value="bank">העברה בנקאית</option>
+                        <option value="check">צ'ק</option>
+                        <option value="cash">מזומן</option>
+                        <option value="credit">כרטיס אשראי</option>
+                        <option value="bit">ביט / פייבוקס</option>
+                        <option value="other">אחר</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📎 צרף קובץ (קבלה / חשבונית)</label>
+                    <input type="file" id="paymentFile" accept="image/*,.pdf">
+                </div>
+                <div class="form-group">
+                    <label>הערה</label>
+                    <input type="text" id="paymentNote" placeholder="">
+                </div>
+            </div>
+            <button class="btn btn-blue btn-full" onclick="addPayment()">💳 רשום תשלום</button>
+
+            <div class="filter-bar" style="margin-top:12px;">
+                <label>🔍 סינון:</label>
+                <select id="paymentFilter" onchange="renderPayments()">
+                    <option value="all">כל בעלי המקצוע</option>
+                </select>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>תאריך</th>
+                            <th>בעל מקצוע</th>
+                            <th>סכום</th>
+                            <th>אמצעי</th>
+                            <th>📎</th>
+                            <th>הערה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTable"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="paymentsEmpty">
+                <div class="icon">💳</div>
+                <p>עדיין לא נרשמו תשלומים</p>
+            </div>
+        </div>
+
+        <!-- NOTES SECTION -->
+        <div class="section">
+            <h2>📝 הערות</h2>
+            <textarea class="notes-area" id="notesArea" placeholder="רשום הערות, תזכורות, דברים חשובים..."></textarea>
+        </div>
+
+        <!-- BOTTOM ACTIONS -->
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveData()">💾 שמור</button>
+            <button class="btn btn-blue" onclick="exportData()">📤 ייצוא</button>
+            <button class="btn btn-purple" onclick="document.getElementById('importFileInput').click()">📥 ייבוא</button>
+            <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
+            <button class="btn btn-warning" onclick="printPage()">🖨️ הדפסה</button>
+            <button class="btn btn-danger" onclick="clearAll()">🗑️ איפוס</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============ LOADING SCREEN ============
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const ls = document.getElementById('loading-screen');
+            const ma = document.getElementById('main-app');
+            ls.classList.add('hidden');
+            ma.classList.add('visible');
+            setTimeout(() => ls.style.display = 'none', 800);
+        }, 3000);
+    });
+
+    // ============ iOS INSTALL PROMPT ============
+    function showInstallPrompt() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isStandalone = window.navigator.standalone === true;
+        const dismissed = localStorage.getItem('installPromptDismissedReno');
+        if (isIOS && !isStandalone && !dismissed) {
+            setTimeout(() => {
+                document.getElementById('installPrompt').style.display = 'block';
+            }, 5000);
+        }
+    }
+
+    function closeInstallPrompt() {
+        document.getElementById('installPrompt').style.display = 'none';
+        localStorage.setItem('installPromptDismissedReno', 'true');
+    }
+
+    showInstallPrompt();
+
+    // ============ DATA ============
+    let data = {
+        settings: { budget: 0, designer: 0, designerStatus: 'unpaid' },
+        workers: [],
+        payments: [],
+        notes: ''
+    };
+
+    function loadData() {
+        const saved = localStorage.getItem('daganRenovation');
+        if (saved) {
+            data = JSON.parse(saved);
+        }
+        // Restore settings
+        document.getElementById('totalBudget').value = data.settings.budget || '';
+        document.getElementById('designerCost').value = data.settings.designer || '';
+        document.getElementById('designerStatus').value = data.settings.designerStatus || 'unpaid';
+        document.getElementById('notesArea').value = data.notes || '';
+        document.getElementById('paymentDate').value = new Date().toISOString().slice(0, 10);
+        renderAll();
+    }
+
+    function saveData() {
+        data.notes = document.getElementById('notesArea').value;
+        localStorage.setItem('daganRenovation', JSON.stringify(data));
+        showToast('✅ הנתונים נשמרו!');
+        if (navigator.vibrate) navigator.vibrate(50);
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ============ SETTINGS ============
+    function saveSettings() {
+        data.settings.budget = parseFloat(document.getElementById('totalBudget').value) || 0;
+        data.settings.designer = parseFloat(document.getElementById('designerCost').value) || 0;
+        data.settings.designerStatus = document.getElementById('designerStatus').value;
+        saveData();
+        updateSummary();
+    }
+
+    // ============ WORKERS ============
+    function addWorker() {
+        const name = document.getElementById('workerName').value.trim();
+        const desc = document.getElementById('workerDesc').value.trim();
+        const amount = parseFloat(document.getElementById('workerAmount').value) || 0;
+        if (!name || !amount) return alert('מלא שם וסכום');
+
+        data.workers.push({ name, desc, amount });
+        saveData();
+        renderWorkers();
+        updatePaymentWorkerSelect();
+
+        document.getElementById('workerName').value = '';
+        document.getElementById('workerDesc').value = '';
+        document.getElementById('workerAmount').value = '';
+    }
+
+    function deleteWorker(i) {
+        if (confirm('למחוק את ' + data.workers[i].name + '?')) {
+            const workerName = data.workers[i].name;
+            data.workers.splice(i, 1);
+            // Remove related payments
+            data.payments = data.payments.filter(p => p.worker !== workerName);
+            saveData();
+            renderAll();
+        }
+    }
+
+    function getWorkerPaid(name) {
+        return data.payments.filter(p => p.worker === name).reduce((sum, p) => sum + p.amount, 0);
+    }
+
+    function renderWorkers() {
+        const tbody = document.getElementById('workersTable');
+        const empty = document.getElementById('workersEmpty');
+        tbody.innerHTML = '';
+
+        if (data.workers.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        data.workers.forEach((w, i) => {
+            const paid = getWorkerPaid(w.name);
+            const remaining = w.amount - paid;
+            let statusBadge;
+            if (remaining <= 0) {
+                statusBadge = '<span class="badge badge-success">שולם ✅</span>';
+            } else if (paid > 0) {
+                statusBadge = '<span class="badge badge-warning">חלקי ⏳</span>';
+            } else {
+                statusBadge = '<span class="badge badge-danger">לא שולם ❌</span>';
+            }
+
+            tbody.innerHTML += `<tr>
+                <td>${i + 1}</td>
+                <td><strong>${w.name}</strong></td>
+                <td>${w.desc}</td>
+                <td>₪${w.amount.toLocaleString()}</td>
+                <td style="color:#00b894;font-weight:bold;">₪${paid.toLocaleString()}</td>
+                <td style="color:${remaining > 0 ? '#d63031' : '#00b894'};font-weight:bold;">₪${remaining.toLocaleString()}</td>
+                <td>${statusBadge}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteWorker(${i})">🗑️</button></td>
+            </tr>`;
+        });
+
+        updateSummary();
+    }
+
+    // ============ PAYMENTS ============
+    function addPayment() {
+        const worker = document.getElementById('paymentWorker').value;
+        const amount = parseFloat(document.getElementById('paymentAmount').value) || 0;
+        const date = document.getElementById('paymentDate').value;
+        const method = document.getElementById('paymentMethod').value;
+        const note = document.getElementById('paymentNote').value;
+        const fileInput = document.getElementById('paymentFile');
+
+        if (!worker || !amount || !date) return alert('מלא בעל מקצוע, סכום ותאריך');
+
+        let fileName = '';
+        let fileData = '';
+
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileName = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileData = e.target.result;
+                data.payments.push({ worker, amount, date, method, note, fileName, fileData });
+                saveData();
+                renderAll();
+                clearPaymentForm();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            data.payments.push({ worker, amount, date, method, note, fileName: '', fileData: '' });
+            saveData();
+            renderAll();
+            clearPaymentForm();
+        }
+    }
+
+    function clearPaymentForm() {
+        document.getElementById('paymentAmount').value = '';
+        document.getElementById('paymentNote').value = '';
+        document.getElementById('paymentFile').value = '';
+        document.getElementById('paymentDate').value = new Date().toISOString().slice(0, 10);
+    }
+
+    function deletePayment(i) {
+        if (confirm('למחוק תשלום?')) {
+            data.payments.splice(i, 1);
+            saveData();
+            renderAll();
+        }
+    }
+
+    function getMethodLabel(method) {
+        const labels = {
+            bank: '🏦 העברה',
+            check: '📝 צ\'ק',
+            cash: '💵 מזומן',
+            credit: '💳 אשראי',
+            bit: '📱 ביט',
+            other: '🔹 אחר'
+        };
+        return labels[method] || method;
+    }
+
+    function renderPayments() {
+        const tbody = document.getElementById('paymentsTable');
+        const empty = document.getElementById('paymentsEmpty');
+        const filter = document.getElementById('paymentFilter').value;
+        tbody.innerHTML = '';
+
+        let filtered = data.payments;
+        if (filter !== 'all') {
+            filtered = data.payments.filter(p => p.worker === filter);
+        }
+
+        if (filtered.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        filtered.forEach((p, idx) => {
+            const realIndex = data.payments.indexOf(p);
+            const fileCell = p.fileName
+                ? `<a href="${p.fileData}" target="_blank" class="file-preview">📎 ${p.fileName.substring(0, 15)}</a>`
+                : '-';
+
+            tbody.innerHTML += `<tr>
+                <td>${idx + 1}</td>
+                <td>${p.date}</td>
+                <td><strong>${p.worker}</strong></td>
+                <td style="font-weight:bold;color:#00b894;">₪${p.amount.toLocaleString()}</td>
+                <td>${getMethodLabel(p.method)}</td>
+                <td>${fileCell}</td>
+                <td>${p.note || '-'}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deletePayment(${realIndex})">🗑️</button></td>
+            </tr>`;
+        });
+
+        updateSummary();
+    }
+
+    function updatePaymentWorkerSelect() {
+        const select = document.getElementById('paymentWorker');
+        const filterSelect = document.getElementById('paymentFilter');
+        const currentVal = select.value;
+
+        select.innerHTML = '<option value="">— בחר —</option>';
+        filterSelect.innerHTML = '<option value="all">כל בעלי המקצוע</option>';
+
+        data.workers.forEach(w => {
+            select.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+            filterSelect.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+        });
+
+        select.value = currentVal;
+    }
+
+    // ============ SUMMARY ============
+    function updateSummary() {
+        const budget = data.settings.budget;
+        const designer = data.settings.designer;
+        const designerPaid = data.settings.designerStatus === 'paid' ? designer : 0;
+
+        const totalExpenses = data.workers.reduce((s, w) => s + w.amount, 0) + designer;
+        const totalPaid = data.payments.reduce((s, p) => s + p.amount, 0) + designerPaid;
+        const remaining = budget - totalExpenses;
+        const debt = totalExpenses - totalPaid;
+
+        document.getElementById('summaryBudget').textContent = '₪' + budget.toLocaleString();
+        document.getElementById('summaryDesigner').textContent = '₪' + designer.toLocaleString();
+        document.getElementById('summaryExpenses').textContent = '₪' + totalExpenses.toLocaleString();
+        document.getElementById('summaryPaid').textContent = '₪' + totalPaid.toLocaleString();
+        document.getElementById('summaryRemaining').textContent = '₪' + remaining.toLocaleString();
+        document.getElementById('summaryDebt').textContent = '₪' + debt.toLocaleString();
+
+        // Color remaining
+        const remEl = document.getElementById('summaryRemaining');
+        remEl.style.color = remaining >= 0 ? '#00b894' : '#d63031';
+    }
+
+    // ============ RENDER ALL ============
+    function renderAll() {
+        renderWorkers();
+        renderPayments();
+        updatePaymentWorkerSelect();
+        updateSummary();
+    }
+
+    // ============ EXPORT / IMPORT ============
+    function exportData() {
+        data.notes = document.getElementById('notesArea').value;
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'renovation_dagan_' + new Date().toISOString().slice(0, 10) + '.json';
+        a.click();
+        showToast('📤 קובץ יוצא בהצלחה!');
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                data = JSON.parse(e.target.result);
+                document.getElementById('totalBudget').value = data.settings.budget || '';
+                document.getElementById('designerCost').value = data.settings.designer || '';
+                document.getElementById('designerStatus').value = data.settings.designerStatus || 'unpaid';
+                document.getElementById('notesArea').value = data.notes || '';
+                saveData();
+                renderAll();
+                showToast('📥 ייבוא הצליח!');
+            } catch {
+                alert('שגיאה בקובץ ❌');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function printPage() {
+        window.print();
+    }
+
+    function clearAll() {
+        if (confirm('למחוק את כל הנתונים?') && confirm('בטוח בטוח?')) {
+            data = {
+                settings: { budget: 0, designer: 0, designerStatus: 'unpaid' },
+                workers: [],
+                payments: [],
+                notes: ''
+            };
+            document.getElementById('totalBudget').value = '';
+            document.getElementById('designerCost').value = '';
+            document.getElementById('designerStatus').value = 'unpaid';
+            document.getElementById('notesArea').value = '';
+            saveData();
+            renderAll();
+            showToast('🗑️ כל הנתונים נמחקו');
+        }
+    }
+
+    // ============ INIT ============
+    loadData();
+</script>
+</body>
+</html>
